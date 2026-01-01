@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useProgress } from "@/hooks/useProgress";
-import { trainingData } from "@/lib/trainingData";
+import { trainingData, achievements } from "@/lib/trainingData";
 import { Award, Flame, TrendingUp, Zap } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
@@ -12,7 +12,9 @@ export default function Home() {
   const [showAchievements, setShowAchievements] = useState(false);
   const stats = getStats();
 
-  const currentWeek = trainingData.find(w => w.weekNumber === progress.currentWeek);
+  // Get the first program's weeks (Ciclo do Nado Fácil)
+  const program = trainingData[0];
+  const currentWeek = program?.weeks?.find(w => w.weekNumber === progress.currentWeek);
   const currentTraining = currentWeek?.trainings.find(t => t.trainingNumber === progress.currentTraining);
 
   const weekProgress = currentWeek ? (progress.completedWeeks.includes(currentWeek.weekNumber) ? 100 : (progress.completedTrainings.filter(id => currentWeek.trainings.some(t => t.id === id)).length / 4) * 100) : 0;
@@ -136,7 +138,7 @@ export default function Home() {
 
             {/* Training Circles */}
             <div className="flex gap-4 mb-6">
-              {currentWeek.trainings.map((training) => {
+              {currentWeek?.trainings.map((training) => {
                 const isCompleted = progress.completedTrainings.includes(training.id);
                 const isCurrent = training.trainingNumber === progress.currentTraining && !isCompleted;
 
@@ -197,7 +199,13 @@ export default function Home() {
         )}
 
         {/* Quick Links */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Link href="/programs">
+            <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
+              <span className="text-xl">📚</span>
+              <span>Programas</span>
+            </Button>
+          </Link>
           <Link href="/history">
             <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
               <TrendingUp className="w-6 h-6" />

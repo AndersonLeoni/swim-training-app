@@ -8,6 +8,8 @@ import { useLocation } from "wouter";
 export default function History() {
   const [, navigate] = useLocation();
   const { progress } = useProgress();
+  const program = trainingData[0];
+  const weeks = program?.weeks || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -26,7 +28,7 @@ export default function History() {
       </header>
 
       <main className="container py-8 pb-20">
-        {trainingData.map((week) => (
+        {weeks.map((week) => (
           <div key={week.id} className="mb-8">
             <div className="flex items-center gap-3 mb-4">
               <div className={`week-badge week-badge-${week.weekNumber}`}>

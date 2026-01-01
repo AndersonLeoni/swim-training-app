@@ -17,13 +17,18 @@ export default function TrainingDetail() {
   // Find training
   let training = null;
   let week = null;
-  for (const w of trainingData) {
-    const t = w.trainings.find(tr => tr.id === trainingId);
-    if (t) {
-      training = t;
-      week = w;
-      break;
+  for (const program of trainingData) {
+    if (program.weeks) {
+      for (const w of program.weeks) {
+        const t = w.trainings.find(tr => tr.id === trainingId);
+        if (t) {
+          training = t;
+          week = w;
+          break;
+        }
+      }
     }
+    if (training) break;
   }
 
   const isCompleted = training ? progress.completedTrainings.includes(training.id) : false;
