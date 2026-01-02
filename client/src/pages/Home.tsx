@@ -194,6 +194,48 @@ export default function Home() {
           </div>
         </Card>
 
+        {/* Strength Training Section */}
+        {program?.trainings && program.trainings.length > 0 && (
+          <Card className="mb-8 p-6 border-2 border-green-200">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">{program.name}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {program.trainings.map((training) => {
+                const isCompleted = progress.completedTrainings.includes(training.id);
+                return (
+                  <Link key={training.id} href={`/training/${training.id}`}>
+                    <Card className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
+                      isCompleted ? "bg-green-50 border-2 border-green-400" : "bg-white border-2 border-gray-200"
+                    }`}>
+                      <div className="flex items-start justify-between mb-3">
+                        <h4 className="font-bold text-lg text-gray-900 flex-1">{training.title}</h4>
+                        {isCompleted && <span className="text-2xl">✓</span>}
+                      </div>
+                      <p className="text-sm text-gray-600 mb-4">{training.focus}</p>
+                      <div className="space-y-2">
+                        {training.warmup && training.warmup.length > 0 && (
+                          <div className="text-xs">
+                            <span className="font-semibold text-blue-600">Aquecimento:</span>
+                            <span className="text-gray-600"> {training.warmup[0].distance}{training.warmup[0].unit}</span>
+                          </div>
+                        )}
+                        {training.main && training.main.length > 0 && (
+                          <div className="text-xs">
+                            <span className="font-semibold text-orange-600">Principal:</span>
+                            <span className="text-gray-600"> {training.main[0].distance}{training.main[0].unit}</span>
+                          </div>
+                        )}
+                      </div>
+                      <Button className="w-full mt-4 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-bold">
+                        {isCompleted ? "Revisitar" : "Iniciar"}
+                      </Button>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </Card>
+        )}
+
         {/* Current Week Progress */}
         {currentWeek && (
           <Card className="mb-8 p-6 border-2 border-blue-200">
