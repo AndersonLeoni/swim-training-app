@@ -10,16 +10,17 @@ import { Link } from "wouter";
 export default function Home() {
   const { progress, completeTraining, getStats } = useProgress();
   const [showAchievements, setShowAchievements] = useState(false);
+  const [selectedProgramId, setSelectedProgramId] = useState("easy-swimming-cycle");
   const stats = getStats();
 
-  // Get the first program's weeks (Ciclo do Nado Fácil)
-  const program = trainingData[0];
+  // Get selected program
+  const program = trainingData.find(p => p.id === selectedProgramId) || trainingData[0];
   const currentWeek = program?.weeks?.find(w => w.weekNumber === progress.currentWeek);
   const currentTraining = currentWeek?.trainings.find(t => t.trainingNumber === progress.currentTraining);
 
   const weekProgress = currentWeek ? (progress.completedWeeks.includes(currentWeek.weekNumber) ? 100 : (progress.completedTrainings.filter(id => currentWeek.trainings.some(t => t.id === id)).length / 4) * 100) : 0;
 
-  const achievements = [
+  const localAchievements = [
     { id: "firstStep", name: "🌊 Primeiro Passo", description: "Completar o primeiro treino", unlocked: progress.achievements.firstStep },
     { id: "week1Completed", name: "🏊 Posição Perfeita", description: "Completar Semana 1", unlocked: progress.achievements.week1Completed },
     { id: "week2Completed", name: "🦵 Perna Forte", description: "Completar Semana 2", unlocked: progress.achievements.week2Completed },
@@ -29,6 +30,14 @@ export default function Home() {
     { id: "cycleCompleted", name: "🏆 Ciclo Completo", description: "Completar as 4 semanas", unlocked: progress.achievements.cycleCompleted },
     { id: "twoCompletedCycles", name: "👑 Mestre Nadador", description: "Completar 2 ciclos", unlocked: progress.achievements.twoCompletedCycles },
   ];
+
+  // Calcular conquista atual baseada no XP
+  const currentAchievement = achievements.reduce((prev, current) => {
+    return stats.totalXP >= current.xpRequired ? current : prev;
+  });
+
+  const nextAchievement = achievements.find(a => a.xpRequired > stats.totalXP);
+  const xpToNextLevel = nextAchievement ? nextAchievement.xpRequired - stats.totalXP : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -41,7 +50,7 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Swim Master</h1>
-              <p className="text-xs text-gray-500">Ciclo do Nado Fácil</p>
+              <p className="text-xs text-gray-500">{program?.name}</p>
             </div>
           </div>
           <Button
@@ -56,6 +65,26 @@ export default function Home() {
       </header>
 
       <main className="container py-8">
+        {/* Program Selector */}
+        <div className="mb-8 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <p className="text-sm font-semibold text-gray-700 mb-3">Selecione um Programa:</p>
+          <div className="flex flex-wrap gap-2">
+            {trainingData.map((prog) => (
+              <button
+                key={prog.id}
+                onClick={() => setSelectedProgramId(prog.id)}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                  selectedProgramId === prog.id
+                    ? "bg-blue-600 text-white shadow-lg"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                {prog.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Hero Section */}
         <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
           <div className="relative h-64 bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center">
@@ -65,8 +94,8 @@ export default function Home() {
               className="absolute inset-0 w-full h-full object-cover opacity-40"
             />
             <div className="relative z-10 text-center text-white">
-              <h2 className="text-4xl font-bold mb-2">Bem-vindo ao Ciclo do Nado Fácil!</h2>
-              <p className="text-lg opacity-90">Melhore sua técnica em 4 semanas com treinos estruturados</p>
+              <h2 className="text-4xl font-bold mb-2">Bem-vindo ao {program?.name}!</h2>
+              <p className="text-lg opacity-90">{program?.description}</p>
             </div>
           </div>
         </div>
@@ -113,6 +142,57 @@ export default function Home() {
             </div>
           </Card>
         </div>
+
+        {/* Pokemon Achievement Section */}
+        <Card className="p-6 mb-8 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">🎮 Hierarquia de Pokémons</h3>
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3">
+                <span className="text-5xl">{currentAchievement.icon}</span>
+                <div>
+                  <p className="font-bold text-lg">{currentAchievement.name}</p>
+                  <p className="text-sm text-gray-600">{currentAchievement.title}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-purple-600">{stats.totalXP} XP</p>
+              </div>
+            </div>
+            {nextAchievement && (
+              <div className="mt-4">
+                <p className="text-sm text-gray-600 mb-2">Próximo nível: {nextAchievement.name} ({nextAchievement.xpRequired} XP)</p>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all"
+                    style={{
+                      width: `${((stats.totalXP - currentAchievement.xpRequired) / (nextAchievement.xpRequired - currentAchievement.xpRequired)) * 100}%`
+                    }}
+                  />
+                </div>
+                <p className="text-xs text-gray-600 mt-1">{xpToNextLevel} XP para o próximo nível</p>
+              </div>
+            )}
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {achievements.map((achievement) => {
+              const isUnlocked = stats.totalXP >= achievement.xpRequired;
+              return (
+                <div
+                  key={achievement.id}
+                  className={`p-3 rounded-lg text-center transition-all ${
+                    isUnlocked
+                      ? `bg-gradient-to-b ${achievement.color} text-white shadow-lg`
+                      : "bg-gray-200 opacity-40 text-gray-600"
+                  }`}
+                >
+                  <div className="text-2xl mb-1">{achievement.icon}</div>
+                  <p className="text-xs font-bold">{achievement.name}</p>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
 
         {/* Current Week Progress */}
         {currentWeek && (
@@ -177,7 +257,7 @@ export default function Home() {
           <Card className="p-6 mb-8 border-2 border-amber-200">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Suas Conquistas</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {achievements.map((achievement) => (
+              {localAchievements.map((achievement) => (
                 <div
                   key={achievement.id}
                   className={`p-4 rounded-lg border-2 text-center transition-all ${
