@@ -14,10 +14,15 @@ export default function TrainingDetail() {
 
   const trainingId = params?.id;
 
-  // Find training
+  // Find training - search in both weeks and direct trainings
   let training = null;
   let week = null;
+  let programName = "";
+
   for (const program of trainingData) {
+    programName = program.name;
+    
+    // Search in weeks (Ciclo, EZ Speed, Super Velô, etc)
     if (program.weeks) {
       for (const w of program.weeks) {
         const t = w.trainings.find(tr => tr.id === trainingId);
@@ -28,6 +33,24 @@ export default function TrainingDetail() {
         }
       }
     }
+    
+    // Search in direct trainings (Preparação Física, Tutoriais)
+    if (!training && program.trainings) {
+      const t = program.trainings.find(tr => tr.id === trainingId);
+      if (t) {
+        training = t;
+        // Create a fake week for programs without weeks
+        week = {
+          id: "no-week",
+          weekNumber: 0,
+          title: program.name,
+          focus: program.description,
+          trainings: []
+        };
+        break;
+      }
+    }
+    
     if (training) break;
   }
 
@@ -108,10 +131,12 @@ export default function TrainingDetail() {
         {/* Focus Section */}
         <Card className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200">
           <div className="flex items-start gap-4">
-            <div className={`week-badge week-badge-${week.weekNumber}`}>
-              {week.weekNumber}
-            </div>
-            <div>
+            {week.weekNumber > 0 && (
+              <div className={`week-badge week-badge-${week.weekNumber}`}>
+                {week.weekNumber}
+              </div>
+            )}
+            <div className="flex-1">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">{training.focus}</h2>
               <p className="text-gray-700">{week.focus}</p>
             </div>
@@ -119,7 +144,7 @@ export default function TrainingDetail() {
         </Card>
 
         {/* Warmup Section */}
-        {training.warmup.length > 0 && (
+        {training.warmup && training.warmup.length > 0 && (
           <div className="mb-8">
             <h3 className="training-section-title">🔥 Aquecimento</h3>
             <div className="space-y-4">
@@ -142,7 +167,7 @@ export default function TrainingDetail() {
         )}
 
         {/* Main Section */}
-        {training.main.length > 0 && (
+        {training.main && training.main.length > 0 && (
           <div className="mb-8">
             <h3 className="training-section-title">💪 Principal</h3>
             <div className="space-y-4">
@@ -193,7 +218,7 @@ export default function TrainingDetail() {
         )}
 
         {/* Observations */}
-        {training.observations.length > 0 && (
+        {training.observations && training.observations.length > 0 && (
           <div className="mb-8">
             <h3 className="training-section-title">📝 Observações Importantes</h3>
             <Card className="p-4 bg-amber-50 border-2 border-amber-200">
@@ -210,7 +235,7 @@ export default function TrainingDetail() {
         )}
 
         {/* Materials */}
-        {training.materials.length > 0 && (
+        {training.materials && training.materials.length > 0 && (
           <div className="mb-8">
             <h3 className="training-section-title">🎒 Materiais Necessários</h3>
             <Card className="p-4 bg-cyan-50 border-2 border-cyan-200">
