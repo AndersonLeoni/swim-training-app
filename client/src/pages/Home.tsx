@@ -4,14 +4,31 @@ import { Progress } from "@/components/ui/progress";
 import { useProgress } from "@/hooks/useProgress";
 import { trainingData, achievements } from "@/lib/trainingData";
 import { Award, Flame, TrendingUp, Zap } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 
 export default function Home() {
   const { progress, completeTraining, getStats } = useProgress();
   const [showAchievements, setShowAchievements] = useState(false);
   const [selectedProgramId, setSelectedProgramId] = useState("easy-swimming-cycle");
+  const [mounted, setMounted] = useState(false);
   const stats = getStats();
+
+  // Carregar programa selecionado do localStorage ao montar
+  useEffect(() => {
+    const saved = localStorage.getItem('selectedProgramId');
+    if (saved) {
+      setSelectedProgramId(saved);
+    }
+    setMounted(true);
+  }, []);
+
+  // Salvar programa selecionado no localStorage quando mudar
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('selectedProgramId', selectedProgramId);
+    }
+  }, [selectedProgramId, mounted]);
 
   // Get selected program
   const program = trainingData.find(p => p.id === selectedProgramId) || trainingData[0];
@@ -38,6 +55,10 @@ export default function Home() {
 
   const nextAchievement = achievements.find(a => a.xpRequired > stats.totalXP);
   const xpToNextLevel = nextAchievement ? nextAchievement.xpRequired - stats.totalXP : 0;
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -225,8 +246,8 @@ export default function Home() {
                           </div>
                         )}
                       </div>
-                      <Button className="w-full mt-4 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-bold">
-                        {isCompleted ? "Revisitar" : "Iniciar"}
+                      <Button className="w-full mt-4 bg-green-600 hover:bg-green-700">
+                        Iniciar
                       </Button>
                     </Card>
                   </Link>
@@ -236,117 +257,88 @@ export default function Home() {
           </Card>
         )}
 
-        {/* Current Week Progress */}
-        {currentWeek && (
-          <Card className="mb-8 p-6 border-2 border-blue-200">
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-2xl font-bold text-gray-900">{currentWeek.title}</h3>
-                <span className={`week-badge week-badge-${currentWeek.weekNumber}`}>
-                  {currentWeek.weekNumber}
-                </span>
-              </div>
-              <p className="text-gray-600 mb-4">{currentWeek.focus}</p>
-            </div>
+        {/* Weeks Section */}
+        {program?.weeks && program.weeks.length > 0 && (
+          <div className="space-y-8">
+            {program.weeks.map((week) => {
+              const isWeekCompleted = progress.completedWeeks.includes(week.weekNumber);
+              const weekTrainings = week.trainings.filter(t => progress.completedTrainings.includes(t.id)).length;
+              const weekProgress = (weekTrainings / week.trainings.length) * 100;
 
-            {/* Progress Bar */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-gray-700">Progresso da Semana</span>
-                <span className="text-sm font-bold text-blue-600">{Math.round(weekProgress)}%</span>
-              </div>
-              <Progress value={weekProgress} className="h-3" />
-            </div>
-
-            {/* Training Circles */}
-            <div className="flex gap-4 mb-6">
-              {currentWeek?.trainings.map((training) => {
-                const isCompleted = progress.completedTrainings.includes(training.id);
-                const isCurrent = training.trainingNumber === progress.currentTraining && !isCompleted;
-
-                return (
-                  <div key={training.id} className="flex flex-col items-center gap-2">
-                    <div
-                      className={`progress-circle ${
-                        isCompleted
-                          ? "progress-circle-completed"
-                          : isCurrent
-                            ? "progress-circle-current"
-                            : "progress-circle-pending"
-                      }`}
-                    >
-                      {isCompleted ? "✓" : training.trainingNumber}
+              return (
+                <Card key={week.id} className={`p-6 border-2 ${isWeekCompleted ? "bg-emerald-50 border-emerald-300" : "border-gray-200"}`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                      <div className={`week-badge week-badge-${week.weekNumber}`}>
+                        {week.weekNumber}
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-900">{week.title}</h3>
+                        <p className="text-sm text-gray-600">{week.focus}</p>
+                      </div>
                     </div>
-                    <span className="text-xs text-gray-600">T{training.trainingNumber}</span>
+                    {isWeekCompleted && <span className="text-3xl">✓</span>}
                   </div>
-                );
-              })}
-            </div>
 
-            {/* Action Button */}
-            {currentTraining && (
-              <Link href={`/training/${currentTraining.id}`}>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-bold py-6 text-lg">
-                  Iniciar Treino {currentTraining.trainingNumber}
-                </Button>
-              </Link>
-            )}
-          </Card>
+                  <Progress value={weekProgress} className="mb-4" />
+                  <p className="text-sm text-gray-600 mb-4">{weekTrainings} de {week.trainings.length} treinos concluídos</p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {week.trainings.map((training) => {
+                      const isCompleted = progress.completedTrainings.includes(training.id);
+                      return (
+                        <Link key={training.id} href={`/training/${training.id}`}>
+                          <Card className={`p-4 cursor-pointer transition-all hover:shadow-md ${
+                            isCompleted ? "bg-emerald-100 border-2 border-emerald-400" : "bg-white border-2 border-gray-200"
+                          }`}>
+                            <div className="flex items-start justify-between mb-2">
+                              <h4 className="font-bold text-gray-900">{training.title}</h4>
+                              {isCompleted && <span className="text-xl">✓</span>}
+                            </div>
+                            <p className="text-xs text-gray-600 mb-3">{training.focus}</p>
+                            <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                              Iniciar
+                            </Button>
+                          </Card>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
         )}
 
-        {/* Achievements Section */}
+        {/* Achievements Modal */}
         {showAchievements && (
-          <Card className="p-6 mb-8 border-2 border-amber-200">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Suas Conquistas</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {localAchievements.map((achievement) => (
-                <div
-                  key={achievement.id}
-                  className={`p-4 rounded-lg border-2 text-center transition-all ${
-                    achievement.unlocked
-                      ? "bg-gradient-to-br from-amber-50 to-amber-100 border-amber-300"
-                      : "bg-gray-50 border-gray-200 opacity-50"
-                  }`}
-                >
-                  <div className="text-4xl mb-2">{achievement.name.split(" ")[0]}</div>
-                  <h4 className="font-bold text-gray-900 mb-1">{achievement.name}</h4>
-                  <p className="text-xs text-gray-600">{achievement.description}</p>
-                  {achievement.unlocked && (
-                    <div className="mt-2 text-xs font-bold text-amber-600">Desbloqueado! 🎉</div>
-                  )}
-                </div>
-              ))}
-            </div>
+          <Card className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+            <Card className="max-w-2xl w-full p-8 max-h-96 overflow-y-auto">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Suas Conquistas</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {localAchievements.map((achievement) => (
+                  <div
+                    key={achievement.id}
+                    className={`p-4 rounded-lg border-2 ${
+                      achievement.unlocked
+                        ? "bg-gradient-to-br from-yellow-50 to-amber-50 border-amber-300"
+                        : "bg-gray-100 border-gray-300 opacity-50"
+                    }`}
+                  >
+                    <p className="font-bold text-lg">{achievement.name}</p>
+                    <p className="text-sm text-gray-600">{achievement.description}</p>
+                  </div>
+                ))}
+              </div>
+              <Button
+                className="w-full mt-6 bg-blue-600 hover:bg-blue-700"
+                onClick={() => setShowAchievements(false)}
+              >
+                Fechar
+              </Button>
+            </Card>
           </Card>
         )}
-
-        {/* Quick Links */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Link href="/programs">
-            <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
-              <span className="text-xl">📚</span>
-              <span>Programas</span>
-            </Button>
-          </Link>
-          <Link href="/history">
-            <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
-              <TrendingUp className="w-6 h-6" />
-              <span>Histórico</span>
-            </Button>
-          </Link>
-          <Link href="/glossary">
-            <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
-              <span className="text-xl">📖</span>
-              <span>Glossário</span>
-            </Button>
-          </Link>
-          <Link href="/settings">
-            <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
-              <span className="text-xl">⚙️</span>
-              <span>Configurações</span>
-            </Button>
-          </Link>
-        </div>
       </main>
     </div>
   );

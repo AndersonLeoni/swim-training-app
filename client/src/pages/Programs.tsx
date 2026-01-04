@@ -91,7 +91,9 @@ export default function Programs() {
   const [, navigate] = useLocation();
 
   const handleSelectProgram = (programId: string) => {
-    // Todos os programas agora redirecionam para home com o programa selecionado
+    // Salvar o programa selecionado no localStorage
+    localStorage.setItem('selectedProgramId', programId);
+    // Redirecionar para home
     navigate("/");
   };
 
