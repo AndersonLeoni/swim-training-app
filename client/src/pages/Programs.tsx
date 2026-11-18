@@ -68,8 +68,8 @@ const programs: ProgramCard[] = [
   {
     id: "strength-training",
     name: "Preparação Física",
-    description: "Plano progressivo de 8 semanas com sessões para superiores, pernas e core, além de uma opção de corpo inteiro em casa.",
-    duration: "8 semanas · 3 sessões por semana",
+    description: "Ciclo de 8 semanas com força, empurrar/puxar adaptados para natação e pliometria em quatro fases progressivas.",
+    duration: "8 semanas · 3 sessões de força e 2 blocos pliométricos por semana",
     icon: "💪",
     color: "from-green-500 to-emerald-500",
     focus: "Força e Condicionamento",
