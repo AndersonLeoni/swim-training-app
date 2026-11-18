@@ -1095,7 +1095,6 @@ const strengthProgressionWeeks: Week[] = Array.from({ length: 8 }, (_, weekIndex
           materials: plan.materials
         };
       })
-    };
   };
 });
 
