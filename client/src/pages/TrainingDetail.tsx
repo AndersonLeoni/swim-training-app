@@ -17,6 +17,7 @@ export default function TrainingDetail() {
   // Find training - search in both weeks and direct trainings
   let training = null;
   let week = null;
+  let selectedProgram = trainingData[0];
   let programName = "";
 
   for (const program of trainingData) {
@@ -29,6 +30,7 @@ export default function TrainingDetail() {
         if (t) {
           training = t;
           week = w;
+          selectedProgram = program;
           break;
         }
       }
@@ -39,6 +41,7 @@ export default function TrainingDetail() {
       const t = program.trainings.find(tr => tr.id === trainingId);
       if (t) {
         training = t;
+        selectedProgram = program;
         // Create a fake week for programs without weeks
         week = {
           id: "no-week",
@@ -58,7 +61,13 @@ export default function TrainingDetail() {
 
   const handleCompleteTraining = () => {
     if (training && week) {
-      completeTraining(training.id, week.weekNumber);
+      completeTraining(
+        training.id,
+        week.weekNumber,
+        selectedProgram.id,
+        week.trainings.map((item) => item.id),
+        selectedProgram.weeks?.length ?? 1
+      );
       setShowConfetti(true);
       setTimeout(() => {
         navigate("/");
