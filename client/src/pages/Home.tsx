@@ -59,7 +59,8 @@ export default function Home() {
 
   const program = trainingData.find((item) => item.id === selectedProgramId) ?? trainingData[0];
   const stats = getStats();
-  const week = program.weeks?.find((item) => item.weekNumber === progress.currentWeek) ?? program.weeks?.[0];
+  const programWeek = progress.programProgress?.[program.id]?.currentWeek ?? 1;
+  const week = program.weeks?.find((item) => item.weekNumber === programWeek) ?? program.weeks?.[0];
   const sessions = week?.trainings ?? program.trainings ?? [];
   const finishedThisWeek = sessions.filter((item) => progress.completedTrainings.includes(item.id)).length;
   const nextTraining = sessions.find((item) => !progress.completedTrainings.includes(item.id)) ?? sessions[0];
@@ -121,6 +122,12 @@ export default function Home() {
 
           <section className="training-section-home">
             <div className="section-heading"><div><span className="section-kicker">{week ? "PLANO EM ANDAMENTO" : "SESSÕES DO PROGRAMA"}</span><h2>{week?.title ?? program.name}</h2><p>{week?.focus ?? program.description}</p></div><Link href="/programs" className="text-link">Ver programas <ArrowRight size={15} /></Link></div>
+            {program.weeks && <div className="mb-5 rounded-xl border border-white/10 bg-white/[0.035] p-4">
+              <div className="mb-2 flex items-center justify-between text-xs font-semibold tracking-wide text-white/70"><span>PROGRESSÃO DO PROGRAMA</span><span>SEMANA {week?.weekNumber ?? 1} DE {program.weeks.length}</span></div>
+              <div className="flex gap-1.5" aria-label={`Semana ${week?.weekNumber ?? 1} de ${program.weeks.length}`}>
+                {program.weeks.map((item) => <span key={item.id} title={item.title} className={`h-1.5 flex-1 rounded-full ${item.weekNumber <= (week?.weekNumber ?? 1) ? "bg-cyan-400" : "bg-white/10"}`} />)}
+              </div>
+            </div>}
             <div className="session-list">{sessions.slice(0, 4).map((training, index) => {
               const done = progress.completedTrainings.includes(training.id);
               const volume = trainingVolume(training);

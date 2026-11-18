@@ -919,164 +919,103 @@ const longDistanceProgram: Week[] = Array.from({ length: 8 }, (_, i) => ({
 // PREPARAÇÃO FÍSICA
 // ============================================
 
-const strengthTrainings: Training[] = [
+const strengthExercisePlans = [
   {
-    id: "strength-academia-1",
-    trainingNumber: 1,
-    title: "Treino Academia 1 - Força Geral",
-    focus: "Fortalecimento geral para nadadores",
-    warmup: [
-      {
-        id: "strength-academia-1-w1",
-        distance: 10,
-        unit: "min",
-        description: "Aquecimento cardiovascular",
-        notes: "Bicicleta ou esteira"
-      }
-    ],
-    main: [
-      {
-        id: "strength-academia-1-m1",
-        distance: 4,
-        unit: "séries",
-        description: "Supino: 4x8 repetições com carga pesada",
-        notes: "Foco em força"
-      },
-      {
-        id: "strength-academia-1-m2",
-        distance: 4,
-        unit: "séries",
-        description: "Puxada frontal: 4x10 repetições",
-        notes: "Trabalha as costas"
-      },
-      {
-        id: "strength-academia-1-m3",
-        distance: 3,
-        unit: "séries",
-        description: "Rosca direta: 3x12 repetições",
-        notes: "Braços"
-      }
-    ],
-    cooldown: [
-      {
-        id: "strength-academia-1-c1",
-        distance: 5,
-        unit: "min",
-        description: "Alongamento",
-        notes: "Recuperação"
-      }
-    ],
-    observations: [
-      "Mantenha a forma correta",
-      "Não sacrifique a técnica pela carga"
-    ],
-    materials: ["Halteres", "Máquinas de musculação"]
+    key: "upper",
+    title: "Academia · Superiores",
+    focus: "Força equilibrada de empurrar e puxar, com atenção à estabilidade dos ombros",
+    materials: ["Halteres ou máquinas", "Elástico"],
+    exercises: [
+      "Supino com halteres ou máquina",
+      "Remada sentada ou com halteres",
+      "Puxada frontal pela frente",
+      "Desenvolvimento de ombros leve",
+      "Face pull com elástico ou polia",
+      "Rotação externa do ombro com elástico",
+      "Rosca de bíceps",
+      "Extensão de tríceps na polia ou com elástico"
+    ]
   },
   {
-    id: "strength-core-1",
-    trainingNumber: 1,
-    title: "Treino Core 1 - Estabilidade",
-    focus: "Fortalecimento do núcleo para melhor posição na água",
-    warmup: [
-      {
-        id: "strength-core-1-w1",
-        distance: 5,
-        unit: "min",
-        description: "Aquecimento dinâmico",
-        notes: "Movimentos funcionais"
-      }
-    ],
-    main: [
-      {
-        id: "strength-core-1-m1",
-        distance: 3,
-        unit: "séries",
-        description: "Prancha: 3x60 segundos",
-        notes: "Estabilidade frontal"
-      },
-      {
-        id: "strength-core-1-m2",
-        distance: 3,
-        unit: "séries",
-        description: "Prancha lateral: 3x45 segundos cada lado",
-        notes: "Estabilidade lateral"
-      },
-      {
-        id: "strength-core-1-m3",
-        distance: 3,
-        unit: "séries",
-        description: "Abdominal na bola: 3x20 repetições",
-        notes: "Flexão do tronco"
-      }
-    ],
-    cooldown: [
-      {
-        id: "strength-core-1-c1",
-        distance: 5,
-        unit: "min",
-        description: "Alongamento",
-        notes: "Recuperação"
-      }
-    ],
-    observations: [
-      "Mantenha a posição neutra da coluna",
-      "Respire continuamente"
-    ],
-    materials: ["Bola de estabilidade", "Tapete"]
+    key: "lower-core",
+    title: "Academia · Pernas e core",
+    focus: "Força de pernas e quadril, controle de tronco e estabilidade",
+    materials: ["Halteres ou máquinas", "Tapete"],
+    exercises: [
+      "Agachamento até amplitude confortável",
+      "Levantamento romeno com halteres",
+      "Avanço reverso alternado",
+      "Elevação de panturrilhas",
+      "Ponte de glúteos",
+      "Dead bug controlado",
+      "Prancha lateral"
+    ]
   },
   {
-    id: "strength-home-1",
-    trainingNumber: 1,
-    title: "Treino em Casa 1 - Sem Equipamento",
-    focus: "Fortalecimento usando apenas peso corporal",
-    warmup: [
-      {
-        id: "strength-home-1-w1",
-        distance: 5,
-        unit: "min",
-        description: "Aquecimento dinâmico",
-        notes: "Movimentos funcionais"
-      }
-    ],
-    main: [
-      {
-        id: "strength-home-1-m1",
-        distance: 3,
-        unit: "séries",
-        description: "Flexão: 3x15 repetições",
-        notes: "Peito e tríceps"
-      },
-      {
-        id: "strength-home-1-m2",
-        distance: 3,
-        unit: "séries",
-        description: "Agachamento: 3x20 repetições",
-        notes: "Pernas"
-      },
-      {
-        id: "strength-home-1-m3",
-        distance: 3,
-        unit: "séries",
-        description: "Prancha: 3x60 segundos",
-        notes: "Core"
-      }
-    ],
-    cooldown: [
-      {
-        id: "strength-home-1-c1",
-        distance: 5,
-        unit: "min",
-        description: "Alongamento",
-        notes: "Recuperação"
-      }
-    ],
-    observations: [
-      "Mantenha a forma correta",
-      "Aumente a dificuldade progressivamente"
-    ],
-    materials: []
+    key: "home",
+    title: "Em casa · Corpo inteiro",
+    focus: "Sessão complementar com peso corporal e elástico opcional",
+    materials: ["Tapete", "Elástico opcional"],
+    exercises: [
+      "Flexão inclinada ou tradicional",
+      "Agachamento com peso corporal",
+      "Remada com elástico (ou mochila leve)",
+      "Ponte de glúteos",
+      "Bird dog alternado",
+      "Prancha frontal"
+    ]
   }
 ];
+
+const strengthProgression = [
+  { sets: 2, reps: "10–12", phase: "Adaptação: pratique os movimentos com controle e esforço moderado." },
+  { sets: 3, reps: "10–12", phase: "Base: mantenha a execução estável em todas as séries." },
+  { sets: 3, reps: "8–10", phase: "Construção: se a técnica estiver firme, aumente ligeiramente a resistência." },
+  { sets: 2, reps: "10", phase: "Semana leve: reduza o esforço e priorize recuperação e mobilidade." },
+  { sets: 3, reps: "8–10", phase: "Progressão: retome a carga confortável da semana 3." },
+  { sets: 3, reps: "8–10", phase: "Consistência: avance apenas se completar as repetições com boa técnica." },
+  { sets: 4, reps: "8", phase: "Consolidação: use carga controlável e descanse o suficiente entre séries." },
+  { sets: 2, reps: "8–10", phase: "Fechamento: semana leve para recuperar e revisar sua evolução." }
+];
+
+const strengthProgressionWeeks: Week[] = strengthProgression.map((progression, weekIndex) => ({
+  id: `strength-week-${weekIndex + 1}`,
+  weekNumber: weekIndex + 1,
+  title: `Semana ${weekIndex + 1} · ${weekIndex === 0 ? "Adaptação" : weekIndex === 3 || weekIndex === 7 ? "Recuperação" : "Progressão"}`,
+  focus: progression.phase,
+  trainings: strengthExercisePlans.map((plan, sessionIndex) => {
+    const id = `strength-w${weekIndex + 1}-${plan.key}`;
+    return {
+      id,
+      trainingNumber: sessionIndex + 1,
+      title: plan.title,
+      focus: plan.focus,
+      warmup: [{
+        id: `${id}-warmup`, distance: 8, unit: "min", description: "Aquecimento geral e mobilidade dinâmica",
+        notes: "Comece leve e faça movimentos sem dor antes das séries principais."
+      }],
+      main: plan.exercises.map((exercise, exerciseIndex) => ({
+        id: `${id}-exercise-${exerciseIndex + 1}`,
+        distance: progression.sets,
+        unit: "séries",
+        description: `${exercise}: ${progression.sets} × ${/prancha/i.test(exercise) ? "20–30 s" : `${progression.reps} repetições`}`,
+        restTime: "60–90 s (ou até recuperar a respiração)",
+        intensity: "Moderada",
+        notes: "Use resistência que permita terminar cada série com a técnica preservada; deixe 2–3 repetições possíveis."
+      })),
+      cooldown: [{
+        id: `${id}-cooldown`, distance: 5, unit: "min", description: "Volta à calma e mobilidade confortável",
+        notes: "Sem forçar amplitudes ou alongamentos dolorosos."
+      }],
+      observations: [
+        progression.phase,
+        "Sugestão: deixe ao menos um dia de recuperação entre as sessões.",
+        "Interrompa qualquer movimento que provoque dor aguda e ajuste a variação ou a carga."
+      ],
+      materials: plan.materials
+    };
+  })
+}));
 
 // ============================================
 // TUTORIAIS TÉCNICOS
@@ -1394,8 +1333,8 @@ export const trainingData: Program[] = [
     name: "Preparação Física",
     category: "Força",
     description: "Programa de fortalecimento e condicionamento físico",
-    duration: "Variável",
-    trainings: strengthTrainings,
+    duration: "8 semanas · 3 sessões por semana",
+    weeks: strengthProgressionWeeks,
     focus: "Força e condicionamento"
   },
   {

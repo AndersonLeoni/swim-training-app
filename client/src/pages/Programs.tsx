@@ -68,8 +68,8 @@ const programs: ProgramCard[] = [
   {
     id: "strength-training",
     name: "Preparação Física",
-    description: "Fortalecimento e condicionamento físico para nadadores. Academia, core, mobilidade e treino em casa.",
-    duration: "Variável",
+    description: "Plano progressivo de 8 semanas com sessões para superiores, pernas e core, além de uma opção de corpo inteiro em casa.",
+    duration: "8 semanas · 3 sessões por semana",
     icon: "💪",
     color: "from-green-500 to-emerald-500",
     focus: "Força e Condicionamento",

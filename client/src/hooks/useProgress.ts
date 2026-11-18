@@ -10,6 +10,7 @@ export interface UserProgress {
   consecutiveDays: number;
   lastTrainingDate: string | null;
   achievements: Record<string, boolean>;
+  programProgress?: Record<string, { currentWeek: number; completedWeeks: number[] }>;
 }
 
 const DEFAULT_PROGRESS: UserProgress = {
@@ -58,7 +59,7 @@ export function useProgress() {
   };
 
   // Completar um treino
-  const completeTraining = (trainingId: string, weekNumber: number) => {
+  const completeTraining = (trainingId: string, weekNumber: number, programId: string, weekTrainingIds: string[], totalWeeks: number) => {
     const newProgress = { ...progress };
 
     // Adicionar ao array de treinos completados se não estiver lá
@@ -73,58 +74,42 @@ export function useProgress() {
       }
     }
 
-    // Verificar se completou todos os 4 treinos da semana
-    const trainingsByWeek = {
-      1: ['w1-t1', 'w1-t2', 'w1-t3', 'w1-t4'],
-      2: ['w2-t1', 'w2-t2', 'w2-t3', 'w2-t4'],
-      3: ['w3-t1', 'w3-t2', 'w3-t3', 'w3-t4'],
-      4: ['w4-t1', 'w4-t2', 'w4-t3', 'w4-t4']
-    };
+    // O progresso fica separado por programa e só avança quando todas as sessões
+    // daquela semana forem concluídas. Isso mantém a jornada ao alternar programas.
+    if (weekNumber > 0 && weekTrainingIds.length > 0) {
+      const programProgress = { ...(newProgress.programProgress ?? {}) };
+      const current = programProgress[programId] ?? (programId === "easy-swimming-cycle"
+        ? { currentWeek: newProgress.currentWeek, completedWeeks: newProgress.completedWeeks }
+        : { currentWeek: 1, completedWeeks: [] });
+      const weekCompleted = weekTrainingIds.every(id => newProgress.completedTrainings.includes(id));
+      if (weekCompleted && !current.completedWeeks.includes(weekNumber)) {
+        const completedWeeks = [...current.completedWeeks, weekNumber];
+        const currentWeek = Math.min(weekNumber + 1, totalWeeks);
+        programProgress[programId] = { currentWeek, completedWeeks };
+        newProgress.programProgress = programProgress;
+        newProgress.totalXP += 100;
 
-    const weekTrainings = trainingsByWeek[weekNumber as keyof typeof trainingsByWeek] || [];
-    const weekCompleted = weekTrainings.every(id => newProgress.completedTrainings.includes(id));
-
-    if (weekCompleted && !newProgress.completedWeeks.includes(weekNumber)) {
-      newProgress.completedWeeks.push(weekNumber);
-      newProgress.totalXP += 100; // +100 XP bônus por semana
-
-      // Unlock achievements por semana
-      if (weekNumber === 1 && !newProgress.achievements.week1Completed) {
-        newProgress.achievements.week1Completed = true;
-      }
-      if (weekNumber === 2 && !newProgress.achievements.week2Completed) {
-        newProgress.achievements.week2Completed = true;
-      }
-      if (weekNumber === 3 && !newProgress.achievements.week3Completed) {
-        newProgress.achievements.week3Completed = true;
-      }
-      if (weekNumber === 4 && !newProgress.achievements.week4Completed) {
-        newProgress.achievements.week4Completed = true;
-      }
-
-      // Verificar se completou o ciclo inteiro
-      if (newProgress.completedWeeks.length === 4) {
-        newProgress.completedCycles += 1;
-        newProgress.totalXP += 500; // +500 XP bônus por ciclo
-        newProgress.achievements.cycleCompleted = true;
-
-        if (newProgress.completedCycles >= 2) {
-          newProgress.achievements.twoCompletedCycles = true;
+        // Preserve the original cycle achievements and counters for the default plan.
+        if (programId === "easy-swimming-cycle") {
+          newProgress.completedWeeks = Array.from(new Set([...newProgress.completedWeeks, weekNumber]));
+          const weekAchievement = `week${weekNumber}Completed`;
+          if (weekNumber <= 4 && weekAchievement in newProgress.achievements) {
+            newProgress.achievements[weekAchievement] = true;
+          }
+          if (newProgress.completedWeeks.length === totalWeeks) {
+            newProgress.completedCycles += 1;
+            newProgress.totalXP += 500;
+            newProgress.achievements.cycleCompleted = true;
+            if (newProgress.completedCycles >= 2) newProgress.achievements.twoCompletedCycles = true;
+            newProgress.completedWeeks = [];
+            programProgress[programId] = { currentWeek: 1, completedWeeks: [] };
+            newProgress.currentWeek = 1;
+            newProgress.currentTraining = 1;
+          } else {
+            newProgress.currentWeek = currentWeek;
+            newProgress.currentTraining = 1;
+          }
         }
-
-        // Resetar para próximo ciclo
-        newProgress.completedWeeks = [];
-        newProgress.currentWeek = 1;
-        newProgress.currentTraining = 1;
-      } else {
-        // Avançar para próxima semana
-        newProgress.currentWeek = weekNumber + 1;
-        newProgress.currentTraining = 1;
-      }
-    } else {
-      // Avançar para próximo treino da mesma semana
-      if (newProgress.currentTraining < 4) {
-        newProgress.currentTraining += 1;
       }
     }
 
@@ -165,11 +150,13 @@ export function useProgress() {
 
   // Obter estatísticas
   const getStats = () => {
+    const programWeeksCompleted = Object.values(progress.programProgress ?? {})
+      .reduce((total, item) => total + item.completedWeeks.length, 0);
     return {
       totalTrainings: progress.completedTrainings.length,
       totalXP: progress.totalXP,
       consecutiveDays: progress.consecutiveDays,
-      completedWeeks: progress.completedWeeks.length,
+      completedWeeks: Math.max(progress.completedWeeks.length, programWeeksCompleted),
       completedCycles: progress.completedCycles,
       unlockedAchievements: Object.values(progress.achievements).filter(Boolean).length,
       totalAchievements: Object.keys(progress.achievements).length
