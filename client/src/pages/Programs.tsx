@@ -76,6 +76,16 @@ const programs: ProgramCard[] = [
     status: "available"
   },
   {
+    id: "physical-transition",
+    name: "Preparação Física · Transição",
+    description: "Sessão recuperada com aquecimento opcional, força geral e parâmetros originais de séries, repetições, carga e descanso.",
+    duration: "Sessão única",
+    icon: "🏋️",
+    color: "from-emerald-500 to-teal-500",
+    focus: "Força Geral",
+    status: "available"
+  },
+  {
     id: "technical-tutorials",
     name: "Tutoriais Técnicos",
     description: "Vídeos e guias técnicos sobre saída, virada, palmateio e outros fundamentos da natação.",

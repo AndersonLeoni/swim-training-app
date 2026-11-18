@@ -1017,6 +1017,68 @@ const strengthProgressionWeeks: Week[] = strengthProgression.map((progression, w
   })
 }));
 
+// Sessão recuperada do material público "Preparação Física - Transição",
+// publicado pelo próprio Anderson Leoni. Mantemos esta sessão separada da
+// progressão geral de 8 semanas, pois a fonte recuperada não define um ciclo.
+const physicalTransitionTraining: Training = {
+  id: "physical-transition-session",
+  trainingNumber: 1,
+  title: "Preparação Física · Transição",
+  focus: "Sessão de transição com força geral e exercícios de estabilidade",
+  warmup: [
+    {
+      id: "physical-transition-warmup-1",
+      distance: 2,
+      unit: "séries",
+      description: "Prancha frontal · 30 s",
+      restTime: "30 s"
+    },
+    {
+      id: "physical-transition-warmup-2",
+      distance: 2,
+      unit: "séries",
+      description: "Prancha lateral · 15 s para cada lado",
+      restTime: "15 s"
+    },
+    {
+      id: "physical-transition-warmup-3",
+      distance: 2,
+      unit: "séries",
+      description: "Elevação pélvica unilateral · 15 s para cada perna",
+      restTime: "15 s"
+    },
+    {
+      id: "physical-transition-warmup-4",
+      distance: 2,
+      unit: "séries",
+      description: "Perdigueiro · 15 s",
+      restTime: "15 s"
+    }
+  ],
+  main: [
+    "Supino máquina",
+    "Remada máquina",
+    "Pull down",
+    "Agachamento Smith ou barra livre",
+    "Leg press máquina ou 45°",
+    "Agachamento com barra hexagonal ou agachamento livre"
+  ].map((exercise, index) => ({
+    id: `physical-transition-main-${index + 1}`,
+    distance: 2,
+    unit: "a 3 séries",
+    description: `${exercise}: 6 a 8 repetições`,
+    restTime: "1 a 1 min 30 s",
+    intensity: "Carga moderada · 60% a 70%",
+    notes: "Ajuste a quantidade de séries, exercícios e variações ao tempo disponível, nível de treino, equipamentos e familiaridade."
+  })),
+  observations: [
+    "Aquecimento opcional, conforme a necessidade.",
+    "Todos os exercícios principais usam 2 a 3 séries, 6 a 8 repetições e carga moderada de 60% a 70%.",
+    "A fonte recuperada descreve uma sessão de transição, sem progressão semanal definida."
+  ],
+  materials: ["Máquinas ou pesos livres", "Barra hexagonal (opcional)"]
+};
+
 // ============================================
 // TUTORIAIS TÉCNICOS
 // ============================================
@@ -1336,6 +1398,15 @@ export const trainingData: Program[] = [
     duration: "8 semanas · 3 sessões por semana",
     weeks: strengthProgressionWeeks,
     focus: "Força e condicionamento"
+  },
+  {
+    id: "physical-transition",
+    name: "Preparação Física · Transição",
+    category: "Força",
+    description: "Sessão recuperada do material de preparação física: estabilidade opcional e força geral em academia.",
+    duration: "Sessão única",
+    trainings: [physicalTransitionTraining],
+    focus: "Força geral e estabilidade"
   },
   {
     id: "technical-tutorials",
