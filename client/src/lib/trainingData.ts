@@ -926,9 +926,9 @@ const strengthExercisePlans = [
     focus: "Força concêntrica com padrão de agachamento e equilíbrio entre empurrar e puxar",
     materials: ["Barra ou máquina", "Halteres ou polia"],
     exercises: [
-      { name: "Agachamento", sets: 4, reps: "4", restTime: "2–4 min", intensity: "80–85% de 1RM · exemplo 4×4 do curso" },
-      { name: "Supino máquina ou com halteres", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · adaptação para natação" },
-      { name: "Remada sentada", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · adaptação para natação" }
+      { name: "Agachamento", role: "primary", sets: 4, reps: "4", restTime: "2–4 min", intensity: "80–85% de 1RM · exemplo 4×4 do curso" },
+      { name: "Supino máquina ou com halteres", role: "accessory", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · adaptação para natação" },
+      { name: "Remada sentada", role: "accessory", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · adaptação para natação" }
     ]
   },
   {
@@ -937,9 +937,9 @@ const strengthExercisePlans = [
     focus: "Força concêntrica de cadeia posterior com puxadas para a musculatura usada no nado",
     materials: ["Barra", "Máquina ou polia"],
     exercises: [
-      { name: "Levantamento terra", sets: 4, reps: "4", restTime: "2–4 min", intensity: "80–85% de 1RM · exemplo 4×4 do curso" },
-      { name: "Puxada frontal", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · adaptação para natação" },
-      { name: "Face pull na polia ou com elástico", sets: 3, reps: "6", restTime: "2 min", intensity: "Carga controlável · adaptação para natação" }
+      { name: "Levantamento terra", role: "primary", sets: 4, reps: "4", restTime: "2–4 min", intensity: "80–85% de 1RM · exemplo 4×4 do curso" },
+      { name: "Puxada frontal", role: "accessory", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · adaptação para natação" },
+      { name: "Face pull na polia ou com elástico", role: "accessory", sets: 3, reps: "6", restTime: "2 min", intensity: "Carga controlável · adaptação para natação" }
     ]
   },
   {
@@ -948,10 +948,10 @@ const strengthExercisePlans = [
     focus: "Força unilateral e extensão de quadril, com complemento de empurrar e puxar",
     materials: ["Halteres ou barra", "Banco ou máquina"],
     exercises: [
-      { name: "Afundo", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · exemplo 3×6 do curso" },
-      { name: "Elevação pélvica", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · exemplo 3×6 do curso" },
-      { name: "Remada unilateral", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · adaptação para natação" },
-      { name: "Flexão inclinada ou tradicional", sets: 3, reps: "6", restTime: "2 min", intensity: "Carga controlável · adaptação para natação" }
+      { name: "Afundo", role: "primary", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · exemplo 3×6 do curso" },
+      { name: "Elevação pélvica", role: "primary", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · exemplo 3×6 do curso" },
+      { name: "Remada unilateral", role: "accessory", sets: 3, reps: "6", restTime: "2 min", intensity: "80–85% de 1RM · adaptação para natação" },
+      { name: "Flexão inclinada ou tradicional", role: "accessory", sets: 3, reps: "6", restTime: "2 min", intensity: "Carga controlável · adaptação para natação" }
     ]
   }
 ];
@@ -1017,50 +1017,114 @@ const plyometricPhases: PlyometricPhase[] = [
   }
 ];
 
-const strengthProgressionWeeks: Week[] = Array.from({ length: 8 }, (_, weekIndex) => {
-  const phaseIndex = Math.floor(weekIndex / 2);
-  const phase = plyometricPhases[phaseIndex];
-  const weekInPhase = weekIndex % 2;
+interface StrengthWeekPrescription {
+  title: string;
+  primarySets: number;
+  primaryReps: string;
+  accessorySets: number;
+  accessoryReps: string;
+  intensity: string;
+  note: string;
+}
+
+interface StrengthCycleBlock {
+  title: string;
+  focus: string;
+  plyometricPhaseIndex: number | null;
+  weeks: StrengthWeekPrescription[];
+}
+
+const strengthCycleBlocks: StrengthCycleBlock[] = [
+  {
+    title: "Adaptação e força base",
+    focus: "Preparar a técnica e aumentar o volume de forma gradual",
+    plyometricPhaseIndex: 0,
+    weeks: [
+      { title: "Entrada técnica", primarySets: 2, primaryReps: "8", accessorySets: 2, accessoryReps: "8", intensity: "Carga moderada e execução estável", note: "Semana de entrada: deixe repetições em reserva e pratique os movimentos." },
+      { title: "Construção de base", primarySets: 3, primaryReps: "8", accessorySets: 2, accessoryReps: "8", intensity: "Carga moderada; adapte sem perder a técnica", note: "Aumente uma série nos exercícios principais apenas se a semana anterior foi bem tolerada." },
+      { title: "Descarga técnica", primarySets: 2, primaryReps: "6", accessorySets: 2, accessoryReps: "6", intensity: "Carga leve a moderada", note: "Reduza o volume antes de iniciar o bloco de força e potência." }
+    ]
+  },
+  {
+    title: "Força e potência",
+    focus: "Construir força concêntrica e sustentar as sessões pliométricas da fase 2",
+    plyometricPhaseIndex: 1,
+    weeks: [
+      { title: "Entrada de força", primarySets: 3, primaryReps: "6", accessorySets: 3, accessoryReps: "6", intensity: "Carga controlável; faixa de 4–8 repetições da diretriz", note: "Inicie o bloco sem usar a carga máxima; mantenha intervalo de pelo menos 2 minutos." },
+      { title: "Força do curso", primarySets: 4, primaryReps: "4", accessorySets: 3, accessoryReps: "6", intensity: "80–85% de 1RM nos movimentos de força", note: "Aplicação dos exemplos do curso: agachamento e terra 4×4; afundo e elevação pélvica 3×6." },
+      { title: "Consolidação", primarySets: 4, primaryReps: "4", accessorySets: 4, accessoryReps: "6", intensity: "Mantenha a carga se a técnica seguir estável", note: "Consolide os principais em 4×4; acrescente uma série apenas aos acessórios adaptados, até 4 séries." },
+      { title: "Descarga", primarySets: 2, primaryReps: "6", accessorySets: 2, accessoryReps: "6", intensity: "Carga leve a moderada", note: "Semana de descarga: reduza séries e carga antes do bloco de potência e velocidade." }
+    ]
+  },
+  {
+    title: "Potência e velocidade",
+    focus: "Manter a força com poucas repetições e intenção concêntrica rápida",
+    plyometricPhaseIndex: 2,
+    weeks: [
+      { title: "Entrada de potência", primarySets: 2, primaryReps: "4", accessorySets: 2, accessoryReps: "6", intensity: "Carga controlável e movimento rápido, sem perder a técnica", note: "Comece com volume baixo; encerre a série se a velocidade ou a forma cair." },
+      { title: "Desenvolvimento", primarySets: 3, primaryReps: "4", accessorySets: 3, accessoryReps: "6", intensity: "Carga controlável; intenção concêntrica rápida", note: "Aumente uma série nos principais se estiver recuperado da semana anterior." },
+      { title: "Pico de potência", primarySets: 3, primaryReps: "4", accessorySets: 3, accessoryReps: "6", intensity: "Mantenha a velocidade; não persiga falha muscular", note: "Mantenha o volume e a qualidade, sem acrescentar carga se houver perda de velocidade." },
+      { title: "Descarga", primarySets: 2, primaryReps: "4", accessorySets: 2, accessoryReps: "6", intensity: "Carga leve a moderada", note: "Reduza o volume antes do bloco de manutenção." }
+    ]
+  },
+  {
+    title: "Manutenção",
+    focus: "Preservar a força e reduzir o volume pliométrico",
+    plyometricPhaseIndex: 3,
+    weeks: [
+      { title: "Manutenção de entrada", primarySets: 3, primaryReps: "4", accessorySets: 2, accessoryReps: "6", intensity: "Carga controlável; sem buscar recordes", note: "Mantenha a qualidade das repetições com volume moderado." },
+      { title: "Manutenção", primarySets: 3, primaryReps: "4", accessorySets: 3, accessoryReps: "6", intensity: "Mantenha carga e velocidade estáveis", note: "Repita a prescrição se a recuperação estiver adequada." },
+      { title: "Redução de volume", primarySets: 2, primaryReps: "4", accessorySets: 2, accessoryReps: "6", intensity: "Carga confortável", note: "Diminua uma série nos principais e acessórios para iniciar a transição recuperado." },
+      { title: "Fechamento do bloco", primarySets: 2, primaryReps: "4", accessorySets: 2, accessoryReps: "6", intensity: "Carga confortável; sem falha", note: "Finalize a fase mantendo a execução. Não aumente a pliometria nesta semana." }
+    ]
+  },
+  {
+    title: "Transição e recuperação",
+    focus: "Recuperar e revisar a execução antes do próximo ciclo",
+    plyometricPhaseIndex: null,
+    weeks: [
+      { title: "Recuperação", primarySets: 2, primaryReps: "6", accessorySets: 2, accessoryReps: "6", intensity: "Carga leve; priorize recuperação", note: "Adaptação do app: mantenha três sessões curtas de força, sem pliometria." },
+      { title: "Revisão e retorno", primarySets: 2, primaryReps: "6", accessorySets: 2, accessoryReps: "6", intensity: "Carga leve a moderada", note: "Adaptação do app: mantenha as repetições confortáveis e reavalie a prontidão antes de iniciar outro ciclo." },
+      { title: "Semana de prontidão", primarySets: 2, primaryReps: "6", accessorySets: 2, accessoryReps: "6", intensity: "Carga leve a moderada, sem recordes", note: "Semana adicional do app para completar pelo menos quatro meses; mantenha a recuperação e planeje a próxima etapa." }
+    ]
+  }
+];
+
+const strengthCycleWeeks = strengthCycleBlocks.flatMap((block) =>
+  block.weeks.map((prescription) => ({ block, prescription }))
+);
+
+const strengthProgressionWeeks: Week[] = strengthCycleWeeks.map(({ block, prescription }, weekIndex) => {
+  const phase = block.plyometricPhaseIndex === null ? null : plyometricPhases[block.plyometricPhaseIndex];
   const isPlyometricSession = (sessionIndex: number) => sessionIndex === 0 || sessionIndex === 2;
-  const strengthPhase = [
-    { title: "Adaptação", sets: 2, reps: "8", intensity: "Carga moderada; adaptação do app dentro da faixa de 4–8 repetições" },
-    { title: "Força + potência", sets: 3, reps: "6", intensity: "80–85% de 1RM nos exercícios de força; exemplos do curso mantidos nos movimentos de membros inferiores" },
-    { title: "Potência + velocidade", sets: 2, reps: "4", intensity: "Carga controlável e intenção concêntrica rápida; adaptação do app, sem percentual definido pelo material" },
-    { title: "Manutenção", sets: 2, reps: "6", intensity: "Volume reduzido para manutenção; adaptação do app" }
-  ][phaseIndex];
-  const progressionNote = weekInPhase === 0
-    ? "Primeira semana da fase: use a prescrição-base e priorize técnica."
-    : phaseIndex === 3
-      ? "Segunda semana da fase de manutenção: mantenha o volume, sem buscar recordes."
-      : "Segunda semana da fase: se a execução estiver estável e sem dor, acrescente 1 série aos exercícios principais (limite de 4 séries); mantenha a carga controlável.";
+  const progressionNote = prescription.note;
 
   return {
-      id: `strength-week-${weekIndex + 1}`,
-      weekNumber: weekIndex + 1,
-      title: `Semana ${weekIndex + 1} · ${phase.title} · ${strengthPhase.title}`,
-      focus: `${phase.focus}. Força: ${strengthPhase.title.toLowerCase()}. Ciclo do app: 2 semanas nesta fase, dentro da duração indicada no material.`,
-      trainings: strengthExercisePlans.map((plan, sessionIndex) => {
-        const id = `strength-w${weekIndex + 1}-${plan.key}`;
-        const strengthSets = plan.exercises.map((exercise, exerciseIndex) => {
-          const isCourseExample = /exemplo (4×4|3×6) do curso/.test(exercise.intensity);
-          const baseSets = phaseIndex === 1 && isCourseExample ? exercise.sets : strengthPhase.sets;
-          const sets = weekInPhase === 1 && phaseIndex !== 3
-            ? Math.min(baseSets + 1, 4)
-            : baseSets;
-          const reps = phaseIndex === 1 && isCourseExample ? exercise.reps : strengthPhase.reps;
+    id: `strength-week-${weekIndex + 1}`,
+    weekNumber: weekIndex + 1,
+    title: `Semana ${weekIndex + 1} · ${block.title} · ${prescription.title}`,
+    focus: `${block.focus}. ${phase ? `${phase.title}: ${phase.focus}; fase pliométrica com duração indicada de ${phase.sourceDuration}.` : "Bloco de transição do app, sem pliometria."}`,
+    trainings: strengthExercisePlans.map((plan, sessionIndex) => {
+      const id = `strength-w${weekIndex + 1}-${plan.key}`;
+      const strengthSets = plan.exercises.map((exercise, exerciseIndex) => {
+        const sets = exercise.role === "primary" ? prescription.primarySets : prescription.accessorySets;
+        const reps = exercise.role === "primary" ? prescription.primaryReps : prescription.accessoryReps;
+        const courseExample = block.title === "Força e potência" && prescription.title === "Força do curso";
 
-          return {
-            id: `${id}-strength-${exerciseIndex + 1}`,
-            distance: sets,
-            unit: "séries",
-            description: `${exercise.name}: ${sets} × ${reps} repetições`,
-            restTime: exercise.restTime,
-            intensity: phaseIndex === 1 && isCourseExample ? exercise.intensity : strengthPhase.intensity,
-            notes: `Diretriz do curso para força concêntrica: 2–4 séries, 4–8 repetições e intervalo de pelo menos 2 min. ${progressionNote} Os exercícios de empurrar/puxar são adaptação do app para natação.`
-          };
-        });
-        const plyometricSets = isPlyometricSession(sessionIndex)
-          ? phase.exercises.map((exercise, exerciseIndex) => ({
+        return {
+          id: `${id}-strength-${exerciseIndex + 1}`,
+          distance: sets,
+          unit: "séries",
+          description: `${exercise.name}: ${sets} × ${reps} repetições`,
+          restTime: exercise.restTime,
+          intensity: courseExample && exercise.intensity.includes("exemplo")
+            ? exercise.intensity
+            : prescription.intensity,
+          notes: `Diretriz do curso para força concêntrica: 2–4 séries, 4–8 repetições e intervalo de pelo menos 2 min. ${progressionNote} Os exercícios de empurrar/puxar são adaptação do app para natação.`
+        };
+      });
+      const plyometricSets = phase && isPlyometricSession(sessionIndex)
+        ? phase.exercises.map((exercise, exerciseIndex) => ({
               id: `${id}-plyo-${exerciseIndex + 1}`,
               distance: exercise.sets,
               unit: "séries",
@@ -1071,30 +1135,32 @@ const strengthProgressionWeeks: Week[] = Array.from({ length: 8 }, (_, weekIndex
             }))
           : [];
 
-        return {
-          id,
-          trainingNumber: sessionIndex + 1,
-          title: plan.title,
-          focus: plan.focus,
-          warmup: [{
-            id: `${id}-warmup`, distance: 8, unit: "min", description: "Aquecimento geral e mobilidade dinâmica",
-            notes: "Preparação geral antes da sessão. O material do curso não define uma sequência única de aquecimento para esta adaptação."
-          }],
-          main: [...plyometricSets, ...strengthSets],
-          cooldown: [{
-            id: `${id}-cooldown`, distance: 5, unit: "min", description: "Volta à calma e mobilidade confortável",
-            notes: "Sem forçar amplitudes ou alongamentos dolorosos."
-          }],
-          observations: [
-            `${phase.title}: ${phase.focus}. Período indicado no material: ${phase.sourceDuration}.`,
-            `Progressão de força desta fase: ${strengthPhase.title} — ${strengthPhase.intensity}. ${progressionNote}`,
-            `Frequência pliométrica do material: ${phase.frequency}; o app usa 2 sessões por semana, nas sessões A e C. ${phase.dose}.`,
-            "A planilha do curso inclui um exemplo de força 3×/semana: agachamento 4×4; levantamento terra 4×4; afundo 3×6 e elevação pélvica 3×6. O app mantém esses exercícios e acrescenta empurrar/puxar como adaptação para natação.",
-            "O material traz fases voltadas ao futebol. O app preserva a estrutura e adapta a aplicação para condicionamento em terra de nadadores; não é uma periodização específica de natação prescrita pelo curso."
-          ],
-          materials: plan.materials
-        };
-      })
+      return {
+        id,
+        trainingNumber: sessionIndex + 1,
+        title: plan.title,
+        focus: plan.focus,
+        warmup: [{
+          id: `${id}-warmup`, distance: 8, unit: "min", description: "Aquecimento geral e mobilidade dinâmica",
+          notes: "Preparação geral antes da sessão. O material do curso não define uma sequência única de aquecimento para esta adaptação."
+        }],
+        main: [...plyometricSets, ...strengthSets],
+        cooldown: [{
+          id: `${id}-cooldown`, distance: 5, unit: "min", description: "Volta à calma e mobilidade confortável",
+          notes: "Sem forçar amplitudes ou alongamentos dolorosos."
+        }],
+        observations: [
+          `${block.title}: ${block.focus}. ${phase ? `Fase pliométrica do material: ${phase.title}, indicada por ${phase.sourceDuration}.` : "A transição/recuperação é uma extensão criada para o ciclo de quatro meses; o material não prescreve uma quinta fase."}`,
+          `Progressão de força — ${prescription.title}: ${prescription.intensity}. ${progressionNote}`,
+          phase
+            ? `Frequência pliométrica do material: ${phase.frequency}; o app usa 2 sessões por semana, nas sessões A e C. ${phase.dose}.`
+            : "Sem saltos nesta fase: recuperação entre ciclos de pliometria.",
+          "A planilha do curso inclui um exemplo de força 3×/semana: agachamento 4×4; levantamento terra 4×4; afundo 3×6 e elevação pélvica 3×6. Os movimentos de empurrar/puxar são adaptação do app para natação.",
+          "O material traz fases voltadas ao futebol. O app preserva a estrutura e adapta a aplicação para condicionamento em terra de nadadores; não é uma periodização específica de natação prescrita pelo curso."
+        ],
+        materials: plan.materials
+      };
+    })
   };
 });
 
@@ -1475,8 +1541,8 @@ export const trainingData: Program[] = [
     id: "strength-training",
     name: "Preparação Física",
     category: "Força",
-    description: "Ciclo de 8 semanas inspirado nas diretrizes de força e nas 4 fases pliométricas do Prepara Academy, com movimentos de empurrar e puxar adaptados para natação.",
-    duration: "8 semanas · 3 sessões de força e 2 blocos pliométricos por semana",
+    description: "Ciclo de 18 semanas (pouco mais de 4 meses) inspirado nas diretrizes de força e nas 4 fases pliométricas do Prepara Academy, com movimentos de empurrar e puxar adaptados para natação.",
+    duration: "18 semanas · 3 sessões de força; 2 blocos pliométricos nas fases 1–4",
     weeks: strengthProgressionWeeks,
     focus: "Força e condicionamento"
   },

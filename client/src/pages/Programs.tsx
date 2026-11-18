@@ -68,8 +68,8 @@ const programs: ProgramCard[] = [
   {
     id: "strength-training",
     name: "Preparação Física",
-    description: "Ciclo de 8 semanas com força, empurrar/puxar adaptados para natação e pliometria em quatro fases progressivas.",
-    duration: "8 semanas · 3 sessões de força e 2 blocos pliométricos por semana",
+    description: "Ciclo de 18 semanas (pouco mais de 4 meses): adaptação, força e potência, potência e velocidade, manutenção e transição. Pliometria distribuída nas quatro fases do curso.",
+    duration: "18 semanas · 3 sessões de força; 2 blocos pliométricos nas fases 1–4",
     icon: "💪",
     color: "from-green-500 to-emerald-500",
     focus: "Força e Condicionamento",
